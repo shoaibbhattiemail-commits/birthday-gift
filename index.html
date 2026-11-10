@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday! 🎂</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Trebuchet MS', sans-serif;
+    background: linear-gradient(135deg, #16002e, #40005c, #8e1b78);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 650px;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.cake {
+    font-size: clamp(65px, 15vw, 100px);
+    animation: bounce 2s infinite;
+}
+
+h1 {
+    font-size: clamp(35px, 8vw, 65px);
+    margin: 20px 0;
+    background: linear-gradient(90deg, #ffde59, #ff8bd1, #fff);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: glow 2s infinite alternate;
+}
+
+.subtitle {
+    font-size: clamp(17px, 4vw, 23px);
+    line-height: 1.7;
+    margin: 20px auto;
+    color: #ffe5ff;
+}
+
+.name {
+    color: #ffdb70;
+    font-size: clamp(28px, 7vw, 42px);
+    margin: 15px 0;
+}
+
+button {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(45deg, #ff4da6, #ff9a44);
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 25px;
+    box-shadow: 0 0 20px #ff4da6;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 35px #ff8bd1;
+}
+
+#surprise {
+    display: none;
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    font-size: 20px;
+    line-height: 1.6;
+    animation: appear 1s ease;
+}
+
+.balloon {
+    position: fixed;
+    bottom: -150px;
+    font-size: 45px;
+    animation: floatUp linear infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes glow {
+    from { filter: drop-shadow(0 0 5px #ff8bd1); }
+    to { filter: drop-shadow(0 0 20px #ffdb70); }
+}
+
+@keyframes floatUp {
+    to { transform: translateY(-120vh) rotate(25deg); }
+}
+
+@keyframes appear {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.footer {
+    margin-top: 35px;
+    color: #e8c5ee;
+    font-size: 13px;
+}
+
+@media(max-width: 480px) {
+    .container {
+        padding: 25px 10px;
+    }
+
+    .subtitle {
+        font-size: 16px;
+    }
+
+    button {
+        font-size: 15px;
+        padding: 13px 24px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div class="container">
+
+    <div class="cake">🎂</div>
+
+    <h1>Happy Birthday!</h1>
+
+    <div class="name" id="birthdayName">
+        Someone Special ❤️
+    </div>
+
+    <p class="subtitle">
+        May your day be filled with endless happiness,
+        beautiful memories, laughter and lots of love!
+        ✨
+    </p>
+
+    <p style="font-size:30px;">
+        🎈 🎁 🎉 🥳 🎈
+    </p>
+
+    <button onclick="showSurprise()">
+        🎁 Open Your Surprise
+    </button>
+
+    <div id="surprise">
+        💖 You are an amazing person! 💖
+        <br><br>
+        May every dream in your heart come true.
+        May this new chapter of your life bring
+        you success, love and countless reasons
+        to smile.
+        <br><br>
+        Happy Birthday Once Again! 🥳🎂
+    </div>
+
+    <div class="footer">
+        Made with ❤️ just for you!
+    </div>
+
+</div>
+
+<script>
+// Change the birthday person's name here
+const personName = "Someone Special";
+document.getElementById("birthdayName").textContent = personName + " ❤️";
+
+// Surprise button
+function showSurprise() {
+    document.getElementById("surprise").style.display = "block";
+    startConfetti();
+}
+
+// Floating balloons
+const balloonEmojis = ["🎈", "💖", "🎈", "✨", "🎉"];
+
+function createBalloon() {
+    const balloon = document.createElement("div");
+    balloon.className = "balloon";
+    balloon.textContent =
+        balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
+
+    balloon.style.left = Math.random() * 100 + "vw";
+    balloon.style.animationDuration = (5 + Math.random() * 6) + "s";
+
+    document.body.appendChild(balloon);
+
+    setTimeout(() => balloon.remove(), 11000);
+}
+
+setInterval(createBalloon, 700);
+
+// Confetti animation
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+let animationRunning = false;
+
+function resizeCanvas() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+function startConfetti() {
+    particles = [];
+
+    for (let i = 0; i < 180; i++) {
+        particles.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * -window.innerHeight,
+            size: Math.random() * 8 + 3,
+            speed: Math.random() * 4 + 2,
+            color: [
+                "#ff4da6",
+                "#ffdb70",
+                "#ffffff",
+                "#64e8ff",
+                "#aaff80",
+                "#b18cff"
+            ][Math.floor(Math.random() * 6)],
+            rotation: Math.random() * 360,
+            rotationSpeed: Math.random() * 8 - 4
+        });
+    }
+
+    if (!animationRunning) {
+        animationRunning = true;
+        animateConfetti();
+    }
+}
+
+function animateConfetti() {
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    particles.forEach((p) => {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation * Math.PI / 180);
+
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 1.5);
+
+        ctx.restore();
+
+        p.y += p.speed;
+        p.x += Math.sin(p.y / 40) * 1.5;
+        p.rotation += p.rotationSpeed;
+    });
+
+    particles = particles.filter(
+        p => p.y < window.innerHeight + 20
+    );
+
+    if (particles.length > 0) {
+        requestAnimationFrame(animateConfetti);
+    } else {
+        animationRunning = false;
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    }
+}
+
+// Initial celebration
+window.addEventListener("load", () => {
+    setTimeout(startConfetti, 500);
+});
+</script>
+
+</body>
+</html>
